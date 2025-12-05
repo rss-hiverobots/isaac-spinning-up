@@ -1,0 +1,23 @@
+[package]
+
+# Semantic Versioning is used: https://semver.org/
+version = "0.1.0"
+
+# Description
+category = "isaaclab"
+readme  = "README.md"
+
+title = "Motion Tracking Example for Humanoids"
+author = "Mayank Mittal"
+maintainer = "Mayank Mittal"
+description="Motion Tracking Example for Humanoids"
+repository = "https://github.com/isaac-sim/IsaacLab.git"
+keywords = ["deepmimic", "motion tracking", "humanoid"]
+
+[dependencies]
+"isaaclab" = {}
+"isaaclab_assets" = {}
+"isaaclab_rl" = {}
+
+[[python.module]]
+name = "motion_tracking"
