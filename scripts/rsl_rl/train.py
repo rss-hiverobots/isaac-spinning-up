@@ -76,7 +76,7 @@ import os
 from datetime import datetime
 
 import gymnasium as gym
-import humanoid_motion_tracking.tasks  # noqa: F401
+import motion_tracking.tasks  # noqa: F401
 import isaaclab_tasks  # noqa: F401
 import omni
 import torch

@@ -23,12 +23,15 @@ from isaaclab.utils.math import (
     yaw_quat,
 )
 
+from motion_tracking.dataset.motion_loader import MotionLoader
+
 if TYPE_CHECKING:
     from isaaclab.envs import ManagerBasedRLEnv
     from .motion_command_cfg import MotionCommandCfg
 
 
 class MotionCommand(CommandTerm):
+    cfg: MotionCommandCfg
 
     def __init__(self, cfg: MotionCommandCfg, env: ManagerBasedRLEnv):
         super().__init__(cfg, env)

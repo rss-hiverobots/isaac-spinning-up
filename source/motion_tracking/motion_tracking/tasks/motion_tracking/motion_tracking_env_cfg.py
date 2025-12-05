@@ -19,6 +19,7 @@ from isaaclab.utils.noise import AdditiveUniformNoiseCfg as Unoise
 ##
 # Pre-defined configs
 ##
+from motion_tracking import MOTION_TRACKING_DATA_DIR
 from motion_tracking.assets.g1 import G1_ACTION_SCALE, G1_CYLINDER_CFG
 import motion_tracking.tasks.motion_tracking.mdp as mdp
 
@@ -112,6 +113,7 @@ class CommandsCfg:
             "right_elbow_link",
             "right_wrist_yaw_link",
         ],
+        motion_file=f"{MOTION_TRACKING_DATA_DIR}/motions/npz/g1_spinkick.npz",
     )
 
 
@@ -309,8 +311,8 @@ class CurriculumCfg:
 
 
 @configclass
-class TrackingEnvCfg(ManagerBasedRLEnvCfg):
-    """Configuration for the locomotion velocity-tracking environment."""
+class MotionTrackingEnvCfg(ManagerBasedRLEnvCfg):
+    """Configuration for the motion tracking environment."""
 
     # Scene settings
     scene: MySceneCfg = MySceneCfg(num_envs=4096, env_spacing=2.5)

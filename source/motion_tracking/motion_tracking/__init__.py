@@ -10,7 +10,7 @@ import os
 import toml
 
 # Conveniences to other module directories via relative paths
-MOTION_TRACKING_EXT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
+MOTION_TRACKING_EXT_DIR = os.path.abspath(os.path.join(__file__, "../../"))
 """Path to the extension source directory."""
 
 MOTION_TRACKING_METADATA = toml.load(os.path.join(MOTION_TRACKING_EXT_DIR, "config", "extension.toml"))

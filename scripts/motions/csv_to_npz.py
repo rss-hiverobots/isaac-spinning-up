@@ -10,7 +10,6 @@
 """Launch Isaac Sim Simulator first."""
 
 import argparse
-import numpy as np
 
 from isaaclab.app import AppLauncher
 
@@ -28,7 +27,7 @@ parser.add_argument(
         " loaded."
     ),
 )
-parser.add_argument("--output_name", type=str, required=True, help="The name of the motion npz file.")
+parser.add_argument("--output_file", type=str, required=True, help="The path to the output motion npz file.")
 parser.add_argument("--output_fps", type=int, default=50, help="The fps of the output motion.")
 
 # append AppLauncher cli args
@@ -43,6 +42,7 @@ simulation_app = app_launcher.app
 """Rest everything follows."""
 
 import torch
+import numpy as np
 
 import isaaclab.sim as sim_utils
 from isaaclab.assets import ArticulationCfg, AssetBaseCfg
@@ -55,7 +55,7 @@ from isaaclab.utils.math import axis_angle_from_quat, quat_conjugate, quat_mul, 
 ##
 # Pre-defined configs
 ##
-from whole_body_tracking.robots.g1 import G1_CYLINDER_CFG
+from motion_tracking.assets.g1 import G1_CYLINDER_CFG
 
 
 @configclass
@@ -298,7 +298,8 @@ def run_simulator(sim: sim_utils.SimulationContext, scene: InteractiveScene, joi
             ):
                 log[k] = np.stack(log[k], axis=0)
 
-            np.savez("/tmp/motion.npz", **log)
+            np.savez(args_cli.output_file, **log)
+            print(f"Motion saved to {args_cli.output_file}")
 
 
 def main():
