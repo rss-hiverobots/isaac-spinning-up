@@ -50,7 +50,7 @@ scripts/
 README.md
 ```
 
-## Installation
+## ⚙️ Installation
 
 * Install Isaac Lab v2.3.0 by following
   the [installation guide](https://isaac-sim.github.io/IsaacLab/main/source/setup/installation/index.html). We recommend
@@ -73,7 +73,7 @@ README.md
   python -m pip install -e source/motion_tracking
   ```
 
-## Motion Tracking
+## 🦾 Motion Tracking
 
 Motion tracking is the core component of BeyondMimic-style humanoid control.
 It measures how closely the simulated agent follows a reference motion, and provides rewards that guide the agent during training.
