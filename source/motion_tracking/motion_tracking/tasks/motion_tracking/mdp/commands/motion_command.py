@@ -43,6 +43,8 @@ class MotionCommand(CommandTerm):
             self.robot.find_bodies(self.cfg.body_names, preserve_order=True)[0], dtype=torch.long, device=self.device
         )
 
+        self.dummy_robot: Articulation = env.scene["dummy_robot"]
+
         self.motion = MotionLoader(self.cfg.motion_file, self.body_indexes, device=self.device)
         self.time_steps = torch.zeros(self.num_envs, dtype=torch.long, device=self.device)
         self.body_pos_relative_w = torch.zeros(self.num_envs, len(cfg.body_names), 3, device=self.device)
@@ -314,6 +316,16 @@ class MotionCommand(CommandTerm):
 
         self.current_anchor_visualizer.visualize(self.robot_anchor_pos_w, self.robot_anchor_quat_w)
         self.goal_anchor_visualizer.visualize(self.anchor_pos_w, self.anchor_quat_w)
+
+        self.dummy_robot.write_root_state_to_sim(
+            torch.cat([self.anchor_pos_w, self.anchor_quat_w, self.anchor_lin_vel_w, self.anchor_ang_vel_w], dim=-1),
+            env_ids=None,
+        )
+        self.dummy_robot.write_joint_state_to_sim(
+            self.joint_pos,
+            self.joint_vel,
+            env_ids=None,
+        )
 
         for i in range(len(self.cfg.body_names)):
             self.current_body_visualizers[i].visualize(self.robot_body_pos_w[:, i], self.robot_body_quat_w[:, i])

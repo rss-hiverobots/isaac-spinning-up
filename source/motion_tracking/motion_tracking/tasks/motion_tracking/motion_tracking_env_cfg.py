@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import math
+
 import isaaclab.sim as sim_utils
 from isaaclab.assets import ArticulationCfg, AssetBaseCfg
 from isaaclab.envs import ManagerBasedRLEnvCfg
@@ -20,7 +22,7 @@ from isaaclab.utils.noise import AdditiveUniformNoiseCfg as Unoise
 # Pre-defined configs
 ##
 from motion_tracking import MOTION_TRACKING_DATA_DIR
-from motion_tracking.assets.g1 import G1_ACTION_SCALE, G1_CYLINDER_CFG
+from motion_tracking.assets.g1 import G1_ACTION_SCALE, G1_CYLINDER_CFG, G1_DUMMY_CFG
 import motion_tracking.tasks.motion_tracking.mdp as mdp
 
 ##
@@ -71,7 +73,7 @@ class MySceneCfg(InteractiveSceneCfg):
     contact_forces = ContactSensorCfg(
         prim_path="{ENV_REGEX_NS}/Robot/.*", history_length=3, track_air_time=True, force_threshold=10.0, debug_vis=True
     )
-
+    dummy_robot = G1_DUMMY_CFG.replace(prim_path="{ENV_REGEX_NS}/RobotDummy")
 
 ##
 # MDP settings
@@ -295,6 +297,10 @@ class TerminationsCfg:
                 "right_wrist_yaw_link",
             ],
         },
+    )
+    base_ang_vel_exceed = DoneTerm(
+        func=mdp.base_ang_vel_exceed,
+        params={"threshold": 500 * math.pi / 180.0},
     )
 
 

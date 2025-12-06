@@ -57,7 +57,7 @@ import os
 import time
 
 import gymnasium as gym
-import humanoid_motion_tracking.tasks  # noqa: F401
+import motion_tracking.tasks  # noqa: F401
 import isaaclab_tasks  # noqa: F401
 import torch
 from isaaclab.envs import (
