@@ -14,6 +14,8 @@ You can use this template as a starting point for:
 
 **Keywords:** motion-tracking, deepmimic, humanoids
 
+![Video of Trained Sidekick](docs/robot.mp4)
+
 ## 🤖 About BeyondMimic
 
 [BeyondMimic](https://arxiv.org/abs/2508.08241) is a versatile humanoid control framework that provides:
