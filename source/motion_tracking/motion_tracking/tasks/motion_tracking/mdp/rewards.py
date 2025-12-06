@@ -24,6 +24,10 @@ def motion_global_anchor_position_error_exp(env: ManagerBasedRLEnv, command_name
     # extract the used quantities (to enable type-hinting)
     command: MotionCommand = env.command_manager.get_term(command_name)
 
+    # extract quantities for convenience
+    anchor_pos_w = command.anchor_pos_w
+    robot_anchor_pos_w = command.robot_anchor_pos_w
+
     # compute the error
     # TODO: compute position error between robot and reference
     # Hint: subtract and square, then sum over xyz
@@ -41,6 +45,10 @@ def motion_global_anchor_orientation_error_exp(env: ManagerBasedRLEnv, command_n
     """
     # extract the used quantities (to enable type-hinting)
     command: MotionCommand = env.command_manager.get_term(command_name)
+
+    # extract quantities for convenience
+    anchor_quat_w = command.anchor_quat_w
+    robot_anchor_quat_w = command.robot_anchor_quat_w
 
     # compute the error
     # TODO: compute orientation error between robot and reference
@@ -62,6 +70,10 @@ def motion_relative_body_position_error_exp(
     command: MotionCommand = env.command_manager.get_term(command_name)
     body_indices = get_body_indices(command, body_names)
 
+    # extract quantities for convenience
+    body_pos_w = command.body_pos_relative_w[:, body_indices]
+    robot_body_pos_w = command.robot_body_pos_w[:, body_indices]
+
     # compute the error
     # TODO: compute position error between robot and reference
     # Hint: subtract and square, then sum over xyz 
@@ -81,6 +93,10 @@ def motion_relative_body_orientation_error_exp(
     # extract the used quantities (to enable type-hinting)
     command: MotionCommand = env.command_manager.get_term(command_name)
     body_indices = get_body_indices(command, body_names)
+
+    # extract quantities for convenience
+    body_quat_w = command.body_quat_relative_w[:, body_indices]
+    robot_body_quat_w = command.robot_body_quat_w[:, body_indices]
 
     # compute the error
     # TODO: compute orientation error between robot and reference
