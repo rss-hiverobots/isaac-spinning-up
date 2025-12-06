@@ -248,14 +248,23 @@ The EventsCfg system allows you to register event-driven perturbations that run 
 There are several example EventTerm definitions that have been commented out.
 Your task is to inspect them, understand what they do, and optionally enable or rewrite them as part of the robustness exercises.
 
-### Step 6: Switch motions to other references
+### Step 6: Remove the IMU From the Observation Space
+
+File: [`source/motion_tracking/motion_tracking/tasks/motion_tracking/motion_tracking_env_cfg.py`](source/motion_tracking/motion_tracking/tasks/motion_tracking/motion_tracking_env_cfg.py)
+
+In many real-world humanoid robots, onboard IMUs can fail, drift, or be absent depending on the hardware configuration.
+A robust controller should be able to maintain balance and track motion even without direct inertial measurements.
+
+In this exercise, you will remove all IMU-related signals from the observation vector and modify the MDP accordingly.
+
+### Step 7: Switch motions to other references
 
 The folder [`source/motion_tracking/data/motions`](source/motion_tracking/data/motions) contains additional motions to try out.
 
 Your task in this step is to pre-process, load, and plug in new reference motions into your MDP.
 Re-train the policies for these new references and tune the parameters to improve the tracking.
 
-### 🎯 Optional Challenge Questions
+## 🎯 Optional Challenge Questions
 
 * How does the choice of std influence the "sharpness" of each reward?
 * Why do exponential-kernel rewards often stabilize training better than linear penalties?
