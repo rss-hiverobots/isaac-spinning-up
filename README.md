@@ -206,7 +206,15 @@ Implement the reward terms responsible for tracking the reference motion.
 
 File: [`source/motion_tracking/tasks/motion_tracking/mdp/terminations.py`](source/motion_tracking/tasks/motion_tracking/mdp/terminations.py)
 
-### Step 3: Define domain randomization for friction
+Implement the termination terms responsible for terminating when bad tracking happens.
+
+### Step 3: Tune the learning agent
+
+File: [`source/motion_tracking/motion_tracking/tasks/motion_tracking/agents/rsl_rl_ppo_cfg.py`](source/motion_tracking/motion_tracking/tasks/motion_tracking/agents/rsl_rl_ppo_cfg.py)
+
+Enable empirical normalization to the actor and critic and retrain the policy. Notice the learning curves.
+
+### Step 4: Define domain randomization for friction
 
 File: [`source/motion_tracking/tasks/motion_tracking/motion_tracking_env_cfg.py`](source/motion_tracking/tasks/motion_tracking/motion_tracking_env_cfg)
 
@@ -219,7 +227,7 @@ This configuration controls how materials are updated during environment resets,
 Modify these setting to make policy robust to friction. You can try setting these to small values
 to check the current trained policy.
 
-### Step 4: Define more domain randomization for robustness
+### Step 5: Define more domain randomization for robustness
 
 File: [`source/motion_tracking/tasks/motion_tracking/motion_tracking_env_cfg.py`](source/motion_tracking/tasks/motion_tracking/motion_tracking_env_cfg)
 
@@ -233,7 +241,7 @@ The EventsCfg system allows you to register event-driven perturbations that run 
 There are several example EventTerm definitions that have been commented out.
 Your task is to inspect them, understand what they do, and optionally enable or rewrite them as part of the robustness exercises.
 
-### Step 5: Switch motions to other references
+### Step 6: Switch motions to other references
 
 The folder [`source/motion_tracking/data/motions`](`source/motion_tracking/data/motions`) contains additional motions to try out.
 
