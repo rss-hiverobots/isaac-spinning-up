@@ -3,6 +3,12 @@ from isaaclab.actuators import ImplicitActuatorCfg
 from isaaclab.assets.articulation import ArticulationCfg
 from motion_tracking import MOTION_TRACKING_DATA_DIR
 
+__all__ = ["G1_CYLINDER_CFG", "G1_DUMMY_CFG", "G1_ACTION_SCALE"]
+
+##
+# System parameters identified for G1 29DOF
+##
+
 ARMATURE_5020 = 0.003609725
 ARMATURE_7520_14 = 0.010177520
 ARMATURE_7520_22 = 0.025101925
@@ -20,6 +26,10 @@ DAMPING_5020 = 2.0 * DAMPING_RATIO * ARMATURE_5020 * NATURAL_FREQ
 DAMPING_7520_14 = 2.0 * DAMPING_RATIO * ARMATURE_7520_14 * NATURAL_FREQ
 DAMPING_7520_22 = 2.0 * DAMPING_RATIO * ARMATURE_7520_22 * NATURAL_FREQ
 DAMPING_4010 = 2.0 * DAMPING_RATIO * ARMATURE_4010 * NATURAL_FREQ
+
+##
+# Configuration for the Unitree G1 Humanoid robot.
+##
 
 G1_CYLINDER_CFG = ArticulationCfg(
     spawn=sim_utils.UsdFileCfg(
@@ -195,15 +205,22 @@ G1_CYLINDER_CFG = ArticulationCfg(
         ),
     },
 )
+"""Configuration for the Unitree G1 Humanoid robot."""
 
 G1_DUMMY_CFG = G1_CYLINDER_CFG.copy()
+"""Configuration for the Unitree G1 Humanoid robot with no collision meshes."""
 G1_DUMMY_CFG.spawn.usd_path = f"{MOTION_TRACKING_DATA_DIR}/unitree_g1/usd/main_no_collider.usd"
 G1_DUMMY_CFG.spawn.activate_contact_sensors = False
 G1_DUMMY_CFG.spawn.rigid_props.disable_gravity = True
 G1_DUMMY_CFG.spawn.articulation_props.enabled_self_collisions = False
 G1_DUMMY_CFG.actuators = {}
 
+##
+# Action scale for the Unitree G1 Humanoid robot.
+##
+
 G1_ACTION_SCALE = {}
+"""Action scale for the Unitree G1 Humanoid robot."""
 for a in G1_CYLINDER_CFG.actuators.values():
     e = a.effort_limit_sim
     s = a.stiffness

@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import math
 
+import carb
+
 import isaaclab.sim as sim_utils
 from isaaclab.assets import ArticulationCfg, AssetBaseCfg
 from isaaclab.envs import ManagerBasedRLEnvCfg
@@ -29,18 +31,9 @@ import motion_tracking.tasks.motion_tracking.mdp as mdp
 # Scene definition
 ##
 
-VELOCITY_RANGE = {
-    "x": (-0.5, 0.5),
-    "y": (-0.5, 0.5),
-    "z": (-0.2, 0.2),
-    "roll": (-0.52, 0.52),
-    "pitch": (-0.52, 0.52),
-    "yaw": (-0.78, 0.78),
-}
-
 
 @configclass
-class MySceneCfg(InteractiveSceneCfg):
+class MotionTrackingSceneCfg(InteractiveSceneCfg):
     """Configuration for the terrain scene with a legged robot."""
 
     # ground terrain
@@ -61,6 +54,12 @@ class MySceneCfg(InteractiveSceneCfg):
     )
     # robots
     robot: ArticulationCfg = G1_CYLINDER_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
+
+    # sensors
+    contact_forces = ContactSensorCfg(
+        prim_path="{ENV_REGEX_NS}/Robot/.*", history_length=3, track_air_time=True, force_threshold=10.0
+    )
+
     # lights
     light = AssetBaseCfg(
         prim_path="/World/light",
@@ -70,9 +69,9 @@ class MySceneCfg(InteractiveSceneCfg):
         prim_path="/World/skyLight",
         spawn=sim_utils.DomeLightCfg(color=(0.13, 0.13, 0.13), intensity=1000.0),
     )
-    contact_forces = ContactSensorCfg(
-        prim_path="{ENV_REGEX_NS}/Robot/.*", history_length=3, track_air_time=True, force_threshold=10.0, debug_vis=True
-    )
+
+    # dummy robot (for visualization only)
+    # note: in headless mode, we remove it to save memory
     dummy_robot = G1_DUMMY_CFG.replace(prim_path="{ENV_REGEX_NS}/RobotDummy")
 
 ##
@@ -96,7 +95,14 @@ class CommandsCfg:
             "pitch": (-0.1, 0.1),
             "yaw": (-0.2, 0.2),
         },
-        velocity_range=VELOCITY_RANGE,
+        velocity_range={
+            "x": (-0.5, 0.5),
+            "y": (-0.5, 0.5),
+            "z": (-0.2, 0.2),
+            "roll": (-0.52, 0.52),
+            "pitch": (-0.52, 0.52),
+            "yaw": (-0.78, 0.78),
+        },
         joint_position_range=(-0.1, 0.1),
         anchor_body_name="torso_link",
         body_names=[
@@ -150,26 +156,26 @@ class ObservationsCfg:
         joint_vel = ObsTerm(func=mdp.joint_vel_rel, noise=Unoise(n_min=-0.5, n_max=0.5))
         actions = ObsTerm(func=mdp.last_action)
 
-        def __post_init__(self):
-            self.enable_corruption = True
-            self.concatenate_terms = True
-
     @configclass
-    class PrivilegedCfg(ObsGroup):
+    class CriticCfg(ObsGroup):
+        """Observations for critic group."""
+
         command = ObsTerm(func=mdp.generated_commands, params={"command_name": "motion"})
         motion_anchor_pos_b = ObsTerm(func=mdp.motion_anchor_pos_b, params={"command_name": "motion"})
         motion_anchor_ori_b = ObsTerm(func=mdp.motion_anchor_ori_b, params={"command_name": "motion"})
-        body_pos = ObsTerm(func=mdp.robot_body_pos_b, params={"command_name": "motion"})
-        body_ori = ObsTerm(func=mdp.robot_body_ori_b, params={"command_name": "motion"})
         base_lin_vel = ObsTerm(func=mdp.base_lin_vel)
         base_ang_vel = ObsTerm(func=mdp.base_ang_vel)
         joint_pos = ObsTerm(func=mdp.joint_pos_rel)
         joint_vel = ObsTerm(func=mdp.joint_vel_rel)
         actions = ObsTerm(func=mdp.last_action)
 
+        # privileged observations (for critic only)
+        body_pos = ObsTerm(func=mdp.robot_body_pos_b, params={"command_name": "motion"})
+        body_ori = ObsTerm(func=mdp.robot_body_ori_b, params={"command_name": "motion"})
+
     # observation groups
-    policy: PolicyCfg = PolicyCfg()
-    critic: PrivilegedCfg = PrivilegedCfg()
+    policy: PolicyCfg = PolicyCfg(enable_corruption=True, concatenate_terms=True)
+    critic: CriticCfg = CriticCfg(enable_corruption=False, concatenate_terms=True)
 
 
 @configclass
@@ -190,11 +196,11 @@ class EventCfg:
     )
 
     add_joint_default_pos = EventTerm(
-        func=mdp.randomize_joint_default_pos,
+        func=mdp.randomize_default_joint_pos,
         mode="startup",
         params={
             "asset_cfg": SceneEntityCfg("robot", joint_names=[".*"]),
-            "pos_distribution_params": (-0.01, 0.01),
+            "distribution_params": (-0.01, 0.01),
             "operation": "add",
         },
     )
@@ -213,7 +219,16 @@ class EventCfg:
         func=mdp.push_by_setting_velocity,
         mode="interval",
         interval_range_s=(1.0, 3.0),
-        params={"velocity_range": VELOCITY_RANGE},
+        params={
+            "velocity_range": {
+                "x": (-0.5, 0.5),
+                "y": (-0.5, 0.5),
+                "z": (-0.2, 0.2),
+                "roll": (-0.52, 0.52),
+                "pitch": (-0.52, 0.52),
+                "yaw": (-0.78, 0.78),
+            },
+        },
     )
 
 
@@ -221,6 +236,7 @@ class EventCfg:
 class RewardsCfg:
     """Reward terms for the MDP."""
 
+    # -- task terms for tracking the motion
     motion_global_anchor_pos = RewTerm(
         func=mdp.motion_global_anchor_position_error_exp,
         weight=0.5,
@@ -251,6 +267,8 @@ class RewardsCfg:
         weight=1.0,
         params={"command_name": "motion", "std": 3.14},
     )
+
+    # -- penalties
     action_rate_l2 = RewTerm(func=mdp.action_rate_l2, weight=-1e-1)
     joint_limit = RewTerm(
         func=mdp.joint_pos_limits,
@@ -276,7 +294,10 @@ class RewardsCfg:
 class TerminationsCfg:
     """Termination terms for the MDP."""
 
+    # -- time out term
     time_out = DoneTerm(func=mdp.time_out, time_out=True)
+
+    # -- poor tracking terms
     anchor_pos = DoneTerm(
         func=mdp.bad_anchor_pos_z_only,
         params={"command_name": "motion", "threshold": 0.25},
@@ -298,6 +319,8 @@ class TerminationsCfg:
             ],
         },
     )
+
+    # -- safety terms
     base_ang_vel_exceed = DoneTerm(
         func=mdp.base_ang_vel_exceed,
         params={"threshold": 500 * math.pi / 180.0},
@@ -321,7 +344,7 @@ class MotionTrackingEnvCfg(ManagerBasedRLEnvCfg):
     """Configuration for the motion tracking environment."""
 
     # Scene settings
-    scene: MySceneCfg = MySceneCfg(num_envs=4096, env_spacing=2.5)
+    scene: MotionTrackingSceneCfg = MotionTrackingSceneCfg(num_envs=4096, env_spacing=2.5)
     # Basic settings
     observations: ObservationsCfg = ObservationsCfg()
     actions: ActionsCfg = ActionsCfg()
@@ -344,5 +367,11 @@ class MotionTrackingEnvCfg(ManagerBasedRLEnvCfg):
         self.sim.physx.gpu_max_rigid_patch_count = 10 * 2**15
         # viewer settings
         self.viewer.eye = (1.5, 1.5, 1.5)
-        self.viewer.origin_type = "asset_root"
-        self.viewer.asset_name = "robot"
+
+        # check if we are running headless
+        # if yes, we want to remove the dummy entities for performance reasons
+        carb_settings_iface = carb.settings.get_settings()
+        local_gui = carb_settings_iface.get("/app/window/enabled")
+        livestream_gui = carb_settings_iface.get("/app/livestream/enabled")
+        if not local_gui and not livestream_gui:
+            self.scene.dummy_robot = None

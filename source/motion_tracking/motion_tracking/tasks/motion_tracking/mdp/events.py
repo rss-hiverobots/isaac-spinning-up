@@ -12,16 +12,19 @@ if TYPE_CHECKING:
     from isaaclab.envs import ManagerBasedEnv
 
 
-def randomize_joint_default_pos(
+def randomize_default_joint_pos(
     env: ManagerBasedEnv,
     env_ids: torch.Tensor | None,
     asset_cfg: SceneEntityCfg,
-    pos_distribution_params: tuple[float, float] | None = None,
+    distribution_params: tuple[float, float] | None = None,
     operation: Literal["add", "scale", "abs"] = "abs",
     distribution: Literal["uniform", "log_uniform", "gaussian"] = "uniform",
 ):
-    """
-    Randomize the joint default positions which may be different from URDF due to calibration errors.
+    """Randomize the joint default positions in the asset.
+
+    The default joint positions of the robot might be off-nominal due to calibration issues of the
+    robot's encoders. This function randomizes the joint positions in the interval around the default
+    position by the given ranges. This helps to reduce the bias in the training.
     """
     # extract the used quantities (to enable type-hinting)
     asset: Articulation = env.scene[asset_cfg.name]
@@ -39,14 +42,17 @@ def randomize_joint_default_pos(
     else:
         joint_ids = torch.tensor(asset_cfg.joint_ids, dtype=torch.int, device=asset.device)
 
-    if pos_distribution_params is not None:
+    if distribution_params is not None:
         pos = asset.data.default_joint_pos.to(asset.device).clone()
         pos = _randomize_prop_by_op(
-            pos, pos_distribution_params, env_ids, joint_ids, operation=operation, distribution=distribution
+            pos, distribution_params, env_ids, joint_ids, operation=operation, distribution=distribution
         )[env_ids][:, joint_ids]
 
         if env_ids != slice(None) and joint_ids != slice(None):
             env_ids = env_ids[:, None]
+
+        # set the new joint positions
+        # note: we directly write into the data tensor
         asset.data.default_joint_pos[env_ids, joint_ids] = pos
         # update the offset in action since it is not updated automatically
         env.action_manager.get_term("joint_pos")._offset[env_ids, joint_ids] = pos

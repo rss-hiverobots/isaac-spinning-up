@@ -1,0 +1,118 @@
+[build-system]
+requires = ["setuptools", "toml"]
+build-backend = "setuptools.build_meta"
+
+[tool.isort]
+
+atomic = true
+profile = "black"
+line_length = 120
+py_version = 310
+skip_glob = ["docs/*", "logs/*"]
+group_by_package = true
+
+sections = [
+    "FUTURE",
+    "STDLIB",
+    "THIRDPARTY",
+    "ISAACLABPARTY",
+    "ISAACLABTASKSPARTY",
+    "ISAACLABASSETSPARTY",
+    "FIRSTPARTY",
+    "LOCALFOLDER",
+]
+extra_standard_library = [
+    "numpy",
+    "h5py",
+    "open3d",
+    "torch",
+    "tensordict",
+    "bpy",
+    "matplotlib",
+    "gymnasium",
+    "gym",
+    "scipy",
+    "hid",
+    "yaml",
+    "prettytable",
+    "toml",
+    "trimesh",
+    "tqdm",
+    "kornia",
+]
+known_thirdparty = [
+    "isaacsim.core.api",
+    "isaacsim.replicator.common",
+    "omni.replicator.core",
+    "pxr",
+    "omni.*",
+    "warp",
+    "carb",
+    "Semantics",
+]
+known_isaaclabparty = "isaaclab"
+known_isaaclabtasksparty = [
+    "isaaclab_tasks",
+    "isaaclab_rl",
+]
+known_isaaclabassetsparty = "isaaclab_assets"
+
+# Modify the following to include the package names of your first-party code
+known_firstparty = "motion_tracking"
+known_local_folder = "config"
+
+[tool.pyright]
+
+exclude = [
+    "**/__pycache__",
+    "**/docs",
+    "**/logs",
+    ".git",
+    ".vscode",
+]
+
+typeCheckingMode = "basic"
+pythonVersion = "3.10"
+pythonPlatform = "Linux"
+enableTypeIgnoreComments = true
+
+# This is required as the CI pre-commit does not download the module (i.e. numpy, torch, prettytable)
+# Therefore, we have to ignore missing imports
+reportMissingImports = "none"
+# This is required to ignore for type checks of modules with stubs missing.
+reportMissingModuleSource = "none" # -> most common: prettytable in mdp managers
+
+reportGeneralTypeIssues = "none"       # -> raises 218 errors (usage of literal MISSING in dataclasses)
+reportOptionalMemberAccess = "warning" # -> raises 8 errors
+reportPrivateUsage = "warning"
+
+extraPaths = [
+    "${workspaceFolder}/../IsaacLab/source/isaaclab",
+    "${workspaceFolder}/../IsaacLab/source/isaaclab_assets",
+    "${workspaceFolder}/../IsaacLab/source/isaaclab_rl",
+    "${workspaceFolder}/../IsaacLab/source/isaaclab_tasks",
+    "${workspaceFolder}/../IsaacLab/_isaac_sim/exts/isaacsim.asset.exporter.urdf",
+    "${workspaceFolder}/../IsaacLab/_isaac_sim/exts/isaacsim.core.api",
+    "${workspaceFolder}/../IsaacLab/_isaac_sim/exts/isaacsim.core.cloner",
+    "${workspaceFolder}/../IsaacLab/_isaac_sim/exts/isaacsim.core.prims",
+    "${workspaceFolder}/../IsaacLab/_isaac_sim/exts/isaacsim.core.simulation_manager",
+    "${workspaceFolder}/../IsaacLab/_isaac_sim/exts/isaacsim.core.utils",
+    "${workspaceFolder}/../IsaacLab/_isaac_sim/exts/isaacsim.core.version",
+    "${workspaceFolder}/../IsaacLab/_isaac_sim/extsPhysics/omni.physics.tensors",
+    "${workspaceFolder}/../IsaacLab/_isaac_sim/extsPhysics/omni.physx",
+    "${workspaceFolder}/../IsaacLab/_isaac_sim/extsPhysics/omni.physx.commands",
+    "${workspaceFolder}/../IsaacLab/_isaac_sim/extsPhysics/omni.physx.fabric",
+    "${workspaceFolder}/../IsaacLab/_isaac_sim/extsPhysics/omni.physx.tensors",
+    "${workspaceFolder}/../IsaacLab/_isaac_sim/extsPhysics/omni.usd.schema.physx",
+    "${workspaceFolder}/../IsaacLab/_isaac_sim/extsPhysics/omni.usdphysics",
+    "${workspaceFolder}/../IsaacLab/_isaac_sim/extscache/omni.replicator.core-1.11.35+106.5.0.lx64.r.cp310",
+    "${workspaceFolder}/../IsaacLab/_isaac_sim/extscache/omni.ui-2.26.5+d02c707b.lx64.r.cp310",
+    "${workspaceFolder}/../IsaacLab/_isaac_sim/extscache/omni.usd-1.12.4+d02c707b.lx64.r.cp310",
+    "${workspaceFolder}/../IsaacLab/_isaac_sim/extscache/omni.usd.core-1.4.2+d02c707b.lx64.r",
+]
+
+[tool.codespell]
+skip = '*.usd,*.svg,*.png,_isaac_sim*,*.bib,*.css,*/_build'
+quiet-level = 0
+# the world list should always have words in lower case
+ignore-words-list = "haa,slq,collapsable"

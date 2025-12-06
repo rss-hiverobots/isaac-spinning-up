@@ -37,24 +37,12 @@ repos:
       - id: isort
         name: isort (python)
         args: ["--profile", "black", "--filter-files"]
-  - repo: https://github.com/asottile/pyupgrade
-    rev: v3.15.1
-    hooks:
-      - id: pyupgrade
-        args: ["--py310-plus"]
-        # FIXME: This is a hack because Pytorch does not like: torch.Tensor | dict aliasing
-        exclude: "source/isaaclab/isaaclab/envs/common.py|source/isaaclab/isaaclab/ui/widgets/image_plot.py|source/isaaclab_tasks/isaaclab_tasks/direct/humanoid_amp/motions/motion_loader.py"
   - repo: https://github.com/codespell-project/codespell
     rev: v2.2.6
     hooks:
       - id: codespell
         additional_dependencies:
         - tomli
-  # FIXME: Figure out why this is getting stuck under VPN.
-  # - repo: https://github.com/RobertCraigie/pyright-python
-  #   rev: v1.1.315
-  #   hooks:
-  #   - id: pyright
   - repo: https://github.com/pre-commit/pygrep-hooks
     rev: v1.10.0
     hooks:

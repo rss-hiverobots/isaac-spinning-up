@@ -8,6 +8,8 @@ from isaaclab_rl.rsl_rl import (
 
 @configclass
 class G1MotionTrackingPPORunnerCfg(RslRlOnPolicyRunnerCfg):
+    """Configuration for the G1 motion tracking PPO runner."""
+
     num_steps_per_env = 24
     max_iterations = 30000
     save_interval = 500
