@@ -6,7 +6,6 @@
 """Package containing the motion tracking task for humanoids."""
 
 import os
-
 import toml
 
 # Conveniences to other module directories via relative paths

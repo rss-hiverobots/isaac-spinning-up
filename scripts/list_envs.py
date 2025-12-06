@@ -25,8 +25,9 @@ simulation_app = app_launcher.app
 """Rest everything follows."""
 
 import gymnasium as gym
-import humanoid_motion_tracking.tasks  # noqa: F401
 from prettytable import PrettyTable
+
+import humanoid_motion_tracking.tasks  # noqa: F401
 
 
 def main():

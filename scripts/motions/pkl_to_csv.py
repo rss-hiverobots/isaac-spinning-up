@@ -1,10 +1,10 @@
 """Convert MimicKit pickle motion files to CSV format."""
 
-import pickle
-
 import numpy as np
-import tyro
+import pickle
 from scipy.spatial.transform import Rotation, Slerp
+
+import tyro
 
 
 class FlexibleClass:

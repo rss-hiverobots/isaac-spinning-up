@@ -11,14 +11,14 @@ if TYPE_CHECKING:
     from isaaclab.envs import ManagerBasedRLEnv
 
 from .commands import MotionCommand
-from .rewards import _get_body_indices
+from .utils import get_body_indices
 
 
 def bad_anchor_pos(env: ManagerBasedRLEnv, command_name: str, threshold: float) -> torch.Tensor:
     """Check if the anchor position is beyond the threshold."""
     # extract the used quantities (to enable type-hinting)
     command: MotionCommand = env.command_manager.get_term(command_name)
-    
+
     # compute the error and check if it exceeds the threshold
     return torch.norm(command.anchor_pos_w - command.robot_anchor_pos_w, dim=1) > threshold
 
@@ -41,12 +41,8 @@ def bad_anchor_ori(
     command: MotionCommand = env.command_manager.get_term(command_name)
 
     # compute the projected gravity vector for the motion and the robot
-    motion_projected_gravity_b = math_utils.quat_apply_inverse(
-        command.anchor_quat_w, asset.data.GRAVITY_VEC_W
-    )
-    robot_projected_gravity_b = math_utils.quat_apply_inverse(
-        command.robot_anchor_quat_w, asset.data.GRAVITY_VEC_W
-    )
+    motion_projected_gravity_b = math_utils.quat_apply_inverse(command.anchor_quat_w, asset.data.GRAVITY_VEC_W)
+    robot_projected_gravity_b = math_utils.quat_apply_inverse(command.robot_anchor_quat_w, asset.data.GRAVITY_VEC_W)
 
     # compute the error and check if it exceeds the threshold
     return (motion_projected_gravity_b[:, 2] - robot_projected_gravity_b[:, 2]).abs() > threshold
@@ -59,7 +55,7 @@ def bad_motion_body_pos(
     command: MotionCommand = env.command_manager.get_term(command_name)
 
     # compute the body indices
-    body_indices = _get_body_indices(command, body_names)
+    body_indices = get_body_indices(command, body_names)
 
     # compute the error and check if it exceeds the threshold
     error = torch.norm(
@@ -79,7 +75,7 @@ def bad_motion_body_pos_z_only(
     command: MotionCommand = env.command_manager.get_term(command_name)
 
     # compute the body indices
-    body_indices = _get_body_indices(command, body_names)
+    body_indices = get_body_indices(command, body_names)
 
     # compute the error and check if it exceeds the threshold
     error = torch.abs(command.body_pos_relative_w[:, body_indices, -1] - command.robot_body_pos_w[:, body_indices, -1])

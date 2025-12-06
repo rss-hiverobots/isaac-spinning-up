@@ -27,6 +27,7 @@ from motion_tracking.dataset.motion_loader import MotionLoader
 
 if TYPE_CHECKING:
     from isaaclab.envs import ManagerBasedRLEnv
+
     from .motion_command_cfg import MotionCommandCfg
 
 

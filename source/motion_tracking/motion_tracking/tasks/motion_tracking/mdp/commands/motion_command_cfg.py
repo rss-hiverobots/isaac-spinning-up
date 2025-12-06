@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 from dataclasses import MISSING
@@ -7,7 +6,6 @@ from isaaclab.managers import CommandTermCfg
 from isaaclab.markers import VisualizationMarkersCfg
 from isaaclab.markers.config import FRAME_MARKER_CFG
 from isaaclab.utils import configclass
-
 
 from .motion_command import MotionCommand
 

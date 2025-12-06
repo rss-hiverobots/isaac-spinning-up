@@ -19,13 +19,13 @@ from isaaclab.terrains import TerrainImporterCfg
 from isaaclab.utils import configclass
 from isaaclab.utils.noise import AdditiveUniformNoiseCfg as Unoise
 
+import motion_tracking.tasks.motion_tracking.mdp as mdp
 
 ##
 # Pre-defined configs
 ##
 from motion_tracking import MOTION_TRACKING_DATA_DIR
 from motion_tracking.assets.g1 import G1_ACTION_SCALE, G1_CYLINDER_CFG, G1_DUMMY_CFG
-import motion_tracking.tasks.motion_tracking.mdp as mdp
 
 ##
 # Scene definition
@@ -73,6 +73,7 @@ class MotionTrackingSceneCfg(InteractiveSceneCfg):
     # dummy robot (for visualization only)
     # note: in headless mode, we remove it to save memory
     dummy_robot = G1_DUMMY_CFG.replace(prim_path="{ENV_REGEX_NS}/RobotDummy")
+
 
 ##
 # MDP settings

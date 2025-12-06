@@ -1,6 +1,7 @@
 import isaaclab.sim as sim_utils
 from isaaclab.actuators import ImplicitActuatorCfg
 from isaaclab.assets.articulation import ArticulationCfg
+
 from motion_tracking import MOTION_TRACKING_DATA_DIR
 
 __all__ = ["G1_CYLINDER_CFG", "G1_DUMMY_CFG", "G1_ACTION_SCALE"]
