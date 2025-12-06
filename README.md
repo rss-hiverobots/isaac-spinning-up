@@ -155,7 +155,7 @@ To view the training curves, open the tensorboard logger:
 
 ```bash
 cd /PATH/TO/REPO
-tensorboard --log_dir .
+tensorboard --logdir .
 ```
 
 ### Policy Evaluation
