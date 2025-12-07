@@ -19,10 +19,15 @@ def bad_anchor_pos(env: ManagerBasedRLEnv, command_name: str, threshold: float) 
     # extract the used quantities (to enable type-hinting)
     command: MotionCommand = env.command_manager.get_term(command_name)
 
+    # extract quantities for convenience
+    # note: shape is (num_envs, 3)
+    anchor_pos_w = command.anchor_pos_w
+    robot_anchor_pos_w = command.robot_anchor_pos_w
+
     # compute the error and check if it exceeds the threshold
     # TODO: compute position error between robot and reference
     # Hint: subtract and check if any of the errors exceed the threshold
-    return torch.zeros(env.num_envs, device=env.device, dtype=torch.bool)
+    return torch.norm(anchor_pos_w - robot_anchor_pos_w, dim=1) > threshold
 
 
 def bad_anchor_pos_z_only(env: ManagerBasedRLEnv, command_name: str, threshold: float) -> torch.Tensor:
@@ -92,4 +97,5 @@ def base_ang_vel_exceed(env: ManagerBasedRLEnv, threshold: float) -> torch.Tenso
     # check if any of the errors exceed the threshold
     # TODO: check if the base angular velocity exceeds the threshold
     # Hint: use the root_ang_vel_b property of the robot articulation
-    return torch.zeros(env.num_envs, device=env.device, dtype=torch.bool)
+    # note: all asset properties are inside the asset.data attribute
+    return torch.any(asset.data.root_ang_vel_b.abs() > threshold, dim=-1)
