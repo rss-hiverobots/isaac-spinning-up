@@ -42,9 +42,10 @@ def motion_global_anchor_position_error_exp(env: ManagerBasedRLEnv, command_name
 
     # compute the error
     # TODO: compute position error between robot and reference
-    # Hint: subtract and square, then sum over xyz
+    error = torch.norm(anchor_pos_w - robot_anchor_pos_w, dim=-1)**2
+    reward = torch.exp(-error / std**2)
 
-    return 0.0
+    return reward
 
 
 def motion_global_anchor_orientation_error_exp(env: ManagerBasedRLEnv, command_name: str, std: float) -> torch.Tensor:
@@ -65,8 +66,10 @@ def motion_global_anchor_orientation_error_exp(env: ManagerBasedRLEnv, command_n
     # compute the error
     # TODO: compute orientation error between robot and reference
     # Hint: use quat_error_magnitude
+    error = torch.square(quat_error_magnitude(anchor_quat_w, robot_anchor_quat_w))
+    reward = torch.exp(-error / std**2)
 
-    return 0.0
+    return reward
 
 
 def motion_relative_body_position_error_exp(
@@ -88,8 +91,12 @@ def motion_relative_body_position_error_exp(
 
     # compute the error
     # TODO: compute position error between robot and reference
-    # Hint: subtract and square, then sum over xyz 
-    return 0.0
+    # Hint: subtract and square, then sum over xyz
+    keypoint_error = torch.norm(body_pos_w - robot_body_pos_w, dim=-1)**2
+    error = torch.sum(keypoint_error, dim=1)
+    reward = torch.exp(-error / std**2)
+
+    return reward
 
 
 def motion_relative_body_orientation_error_exp(
@@ -113,7 +120,12 @@ def motion_relative_body_orientation_error_exp(
     # compute the error
     # TODO: compute orientation error between robot and reference
     # Hint: use quat_error_magnitude
-    return 0.0
+
+    keypoint_error = torch.square(quat_error_magnitude(body_quat_w, robot_body_quat_w))
+    error = torch.sum(keypoint_error, dim=1)
+    reward = torch.exp(-error / std**2)
+
+    return reward
 
 
 def motion_global_body_linear_velocity_error_exp(
