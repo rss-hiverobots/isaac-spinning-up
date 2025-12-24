@@ -101,7 +101,7 @@ class CommandsCfg:
     motion = mdp.MotionCommandCfg(
         asset_name="robot",
         resampling_time_range=(1.0e9, 1.0e9),
-        debug_vis=True,
+        debug_vis=False,  # set to True to visualize the reference motion
         pose_range={
             "x": (-0.05, 0.05),
             "y": (-0.05, 0.05),
